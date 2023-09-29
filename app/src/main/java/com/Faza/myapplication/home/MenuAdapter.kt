@@ -1,23 +1,31 @@
 package com.Faza.myapplication.home
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.Faza.myapplication.R
+import com.Faza.myapplication.databinding.ItemMenuGridBinding
 import com.Faza.myapplication.databinding.ItemMenuLinearBinding
+import com.Faza.myapplication.model.Menu
 
-class MenuAdapter (val isGrid: Boolean, val data: List<String>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class MenuAdapter(private val isGrid: Boolean, private val data: List<Menu>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private var itemClickListener: ((Menu) -> Unit)? = null
+    fun setOnItemClickListener(listener: (Menu) -> Unit) {
+        itemClickListener = listener
+    }
+    companion object {
+        private const val VIEW_TYPE_lINEAR = 0
+        private const val VIEW_TYPE_GRID = 1
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        if (isGrid){
-            val context = parent.context
-            val inflater = LayoutInflater.from(context)
-            val contactView = inflater.inflate(R.layout.item_menu_grid,parent, false)
-            return GridMenuHolder(contactView)
-        }else{
-            val binding = ItemMenuLinearBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-            return LinearMenuHolder(binding)
+        val inflater = LayoutInflater.from(parent.context)
+
+        return if (isGrid) {
+            val gridBinding = ItemMenuGridBinding.inflate(inflater, parent, false)
+            GridMenuHolder(gridBinding)
+        } else {
+            val linearBinding = ItemMenuLinearBinding.inflate(inflater, parent, false)
+            LinearMenuHolder(linearBinding)
         }
     }
 
@@ -26,24 +34,31 @@ class MenuAdapter (val isGrid: Boolean, val data: List<String>) : RecyclerView.A
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (isGrid){
-            val gridHolder = holder as GridMenuHolder
-            gridHolder.onBind(data[position])
-        }else{
-            val linearHolder = holder as LinearMenuHolder
-            linearHolder.onBind(data[position])
+        when (holder) {
+            is GridMenuHolder -> holder.onBind(data[position])
+            is LinearMenuHolder -> holder.onBind(data[position])
+        }
+        val menu = data[position]
+
+        holder.itemView.setOnClickListener{
+            itemClickListener?.invoke(menu)
         }
     }
-}
-class GridMenuHolder(val itemView: View) : RecyclerView.ViewHolder(itemView) {
-    fun onBind(data: String){
-        val grid = itemView.findViewById<TextView>(R.id.tvNameGrid)
-        grid.text = data
+    override fun getItemViewType(position: Int): Int {
+        return if (isGrid) VIEW_TYPE_GRID else VIEW_TYPE_lINEAR
     }
 }
-class LinearMenuHolder(val binding: ItemMenuLinearBinding) : RecyclerView.ViewHolder(binding.root) {
-    fun onBind(data: String){
-        binding.tvMenuName.text = data
+class GridMenuHolder(private val binding: ItemMenuGridBinding) : RecyclerView.ViewHolder(binding.root) {
+    fun onBind(data: Menu) {
+        binding.tvNameGrid.text = data.name
+        // Bind other views if needed
+    }
+}
+
+class LinearMenuHolder(private val binding: ItemMenuLinearBinding) : RecyclerView.ViewHolder(binding.root) {
+    fun onBind(data: Menu) {
+        binding.tvMenuName.text = data.name
+        // Bind other views if needed
     }
 }
 

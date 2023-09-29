@@ -54,4 +54,6 @@ dependencies {
     implementation("io.coil-kt:coil:2.4.0")
     implementation("androidx.recyclerview:recyclerview:1.3.1")
     implementation("androidx.fragment:fragment-ktx:1.6.1")
+    implementation("com.google.android.gms:play-services-maps:18.1.0")
+
 }

@@ -13,6 +13,7 @@
         <action
             android:id="@+id/action_homeFragment_to_detailFragment"
             app:destination="@id/navigation" />
+
     </fragment>
     <navigation android:id="@+id/navigation"
         app:startDestination="@id/detailFragment">

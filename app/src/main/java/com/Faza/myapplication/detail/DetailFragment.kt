@@ -1,60 +1,64 @@
 package com.Faza.myapplication.detail
 
+import android.app.SearchManager
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.navArgs
 import com.Faza.myapplication.R
+import com.Faza.myapplication.databinding.FragmentDetailBinding
+import com.Faza.myapplication.databinding.FragmentHomeBinding
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.MapView
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
-
-/**
- * A simple [Fragment] subclass.
- * Use the [DetailFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class DetailFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
+    private lateinit var mapView: MapView
+    private lateinit var binding: FragmentDetailBinding
+    val args: DetailFragmentArgs by navArgs()
+    val menu = args.menu
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_detail, container, false)
-    }
+        val view = inflater.inflate(R.layout.fragment_detail, container, false)
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment DetailFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            DetailFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
+        mapView = view.findViewById(R.id.Lokasi)
+        mapView.onCreate(savedInstanceState)
+        mapView.onResume()
+
+        val latitude = arguments?.getDouble("latiude") ?: 0.0
+        val longitude = arguments?.getDouble("longitude") ?: 0.0
+
+        val mapViewBundle = Bundle()
+        mapView.onCreate(mapViewBundle)
+
+        mapView.getMapAsync { googleMap ->
+            val location = LatLng(latitude, longitude)
+            googleMap.addMarker(MarkerOptions().position(location))
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15f))
+        }
+        // Inflate the layout for this fragment
+        return view
+    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setClickListener()
+    }
+    private fun setClickListener() {
+        binding.Lokasi.setOnClickListener {
+            navigateToGoogleMaps()
+        }
+    }
+    private fun navigateToGoogleMaps() {
+        val mapIntent = Intent(Intent.ACTION_VIEW, Uri.parse("geo:-6.3016,$106.65337"))
+        mapIntent.setPackage("com.google.android.apps.maps")
+        startActivity(mapIntent)
     }
 }
