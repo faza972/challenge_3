@@ -12,11 +12,12 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_detailFragment"
-            app:destination="@id/navigation" />
-
+            app:destination="@id/detailFragment" />
     </fragment>
+
     <navigation android:id="@+id/navigation"
         app:startDestination="@id/detailFragment">
+
         <fragment
             android:id="@+id/detailFragment"
             android:name="com.Faza.myapplication.detail.DetailFragment"

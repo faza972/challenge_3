@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.Faza.myapplication.R
 import com.Faza.myapplication.databinding.FragmentHomeBinding
@@ -24,12 +25,15 @@ class HomeFragment : Fragment() {
         val view = binding.root
 
         val recyclerView = binding.rvListMenu
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-        val menuAdapter = MenuAdapter(isGrid = false, data = getMenuData())
+        val isGrid = true
+
+        recyclerView.layoutManager = if (isGrid) GridLayoutManager(requireContext(), 2) else LinearLayoutManager(requireContext())
+
+        val menuAdapter = MenuAdapter(isGrid, data = getMenuData())
 
         // Set the click listener for the menu items
         menuAdapter.setOnItemClickListener { menu ->
-            val action = HomeFragmentDirections.actionHomeFragmentToDetailFragment()
+            val action = HomeFragmentDirections.actionHomeFragmentToDetailFragment(menu)
             findNavController().navigate(action)
         }
         recyclerView.adapter = menuAdapter
